@@ -9,81 +9,90 @@
 #include <cryptopp/aes.h>
 #include <cryptopp/modes.h>
 #include <cryptopp/cbcmac.h>
+
 using namespace std;
 using namespace CryptoPP;
 
-int main(){
-    ifstream text1;
-    ofstream text2;
-    ifstream text3;
+void encrypt() {
     string str;
-    string str1 = "";
+    string strs = "";
     string file;
-    int n;
-    {
-        cout << "Encrypt - 0; Decrypt- 1 ";
-        cin >> n;
-        if (n == 0) {
-            string str;
-            string str1 = "";
-            string file;
-            cout << "Text file:";
-            cin >> file;
-            ifstream text1 (file);
-            char c;
-            while (text1.get(c)) 
-            {
-                str1.push_back(c);
-            }
-            byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];//задаем ключ
-            memset(key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH);// не должно работать
-            memset(iv, 0x00, CryptoPP::AES::BLOCKSIZE);
-            string text = str1;
-            string ciphertext;
-            CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);//объект-зашифровщик
-            CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption(aesEncryption, iv);//блочное шифрование
-            CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink(ciphertext));//pipelining
-            stfEncryptor.Put(reinterpret_cast<const unsigned char*>(text.c_str()), text.length());//обрабатываем текст
-            stfEncryptor.MessageEnd();//TODO
-            cout << "Output file: ";
-            string file2;
-            cin >> file2;
-            ofstream text2 (file2);
-            for (int i = 0; i < ciphertext.size(); i++) 
-            {
-                text2 << ciphertext[i];
-            }
-        }
-        else  if (n == 1) 
-        {
-            string str;
-            string str1 = "";
-            string file;
-            cout << "Input file: ";
-            cin >> file;
-            ifstream text1 (file);
-            char c;
-            while (text1.get(c)) 
-            {
-                str1.push_back(c);
-            }
-            byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
-            memset(key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH);
-            memset(iv, 0x00, CryptoPP::AES::BLOCKSIZE);
-            string text = str1;
-            string decryptedtext;
-            string file2;
-            cout << "Output file: ";
-            cin >> file2;
-            ofstream text2 (file2);
-            ifstream text3 (file2);
-            CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
-            CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption(aesDecryption, iv);
-            CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink(decryptedtext));
-            stfDecryptor.Put(reinterpret_cast<const unsigned char*>(text.c_str()), text.size());
-            stfDecryptor.MessageEnd();
-            text2 << decryptedtext;
-        }
-        else return 0;
-    }return 0;
+    cout << "Read file:";
+    cin >> file;
+    ifstream fs (file);
+    char ch;
+    while (fs.get(ch)) {
+        strs.push_back(ch);
+    }
+    byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
+    memset(key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    memset(iv, 0x00, CryptoPP::AES::BLOCKSIZE);
+    string plaintext = strs;
+    string ciphertext;
+    cout << "Plain Text: " << plaintext << std::endl;
+    CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption(aesEncryption, iv);
+    CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink(ciphertext));
+    stfEncryptor.Put(reinterpret_cast<const unsigned char*>(plaintext.c_str()), plaintext.length());
+    stfEncryptor.MessageEnd();
+    cout << "Write file: ";
+    string imp, file2;
+    cin >> file2;
+    cout << "Cipher Text: " << ciphertext << std::endl;
+    ofstream fs2 (file2);
+    for (int i = 0; i < ciphertext.size(); i++) {
+        fs2 << ciphertext[i];
+    }
+}
+
+void decrypt() {
+    string str;
+    string strs = "";
+    string file;
+    cout << "Read file:";
+    cin >> file;
+    ifstream fs (file);
+    char ch;
+    while (fs.get(ch)) {
+        strs.push_back(ch);
+    }
+	byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
+    memset(key, 0x00, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    memset(iv, 0x00, CryptoPP::AES::BLOCKSIZE);
+    string plaintext = strs;
+    string decryptedtext;
+    cout << "Plain Text: " << plaintext << std::endl;
+    string imp, file2;
+    cout << "Write file: ";
+    cin >> file2;
+    ofstream fs2 (file2);
+    ifstream fs3 (file2);
+    CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption(aesDecryption, iv);
+    CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink(decryptedtext));
+    stfDecryptor.Put(reinterpret_cast<const unsigned char*>(plaintext.c_str()), plaintext.size());
+    stfDecryptor.MessageEnd();
+    cout << decryptedtext << endl;
+    fs2 << decryptedtext;
+}
+
+int main(){
+    ifstream fs;
+    ofstream fs2;
+    ifstream fs3;
+    string str;
+    string strs = "";
+    string file;
+    int k;
+            do {
+                cout << "Exit - 0; Encrypt - 1; Decrypt- 2";
+                cin >> k;
+                if (k == 1) {
+                    encrypt();
+                }
+                else  if (k == 2) {
+                    decrypt();
+                }
+            } while (k != 0);
+    return 0;
 }

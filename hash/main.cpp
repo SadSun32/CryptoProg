@@ -2,17 +2,18 @@
 #include <cryptopp/cryptlib.h>
 #include <cryptopp/hex.h>
 #include <cryptopp/files.h>
-#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include <cryptopp/md5.h>
 #include <string>
-#include <fstream>
+
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+
 using namespace std;
-int main()
+using namespace CryptoPP;
+int main(int argc, char **argv)
 {
-    using namespace CryptoPP;
-	string digest;
-    Weak::MD5 hash; //функция-заглушка
-    FileSource("test", true, new HashFilter(hash, new HexEncoder(new StringSink (digest)))); //преобразуем в PHP, с возможностью редактирования
-    cout<<"Hash: "<< digest << endl;
-    return 0;
+  string Hash;
+  Weak::MD5 hash;
+  FileSource("test.txt", true, new HashFilter(hash, new HexEncoder(new StringSink (Hash))));
+  cout<<Hash<<endl;
+  return 0;
 }
