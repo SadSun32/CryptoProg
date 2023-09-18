@@ -1,22 +1,16 @@
 .PHONY: all debug release clean
 
-RELEASE_FLAGS = -O2 -Wall -DNDEBUG
-DEBUG_FLAGS   = -g -O0 -Wall
-RELEASE_EXEC  = hash
-DEBUG_EXEC    = hash-dbg
-SOURCE        = hash.cpp
-
 all: debug release
 
-debug: $(DEBUG_EXEC)
+debug: hash-dbg
 
-$(DEBUG_EXEC): $(SOURCE)
-	g++ $(DEBUG_FLAGS) $(SOURCE) -o $(DEBUG_EXEC) 
+hello-dbg: hash.cpp
+	g++ -g -O0 hash.cpp -o hash-dbg -Wall
 
-release: $(RELEASE_EXEC)
+release: hash
 
-$(RELEASE_EXEC): $(SOURCE)
-	g++ $(RELEASE_FLAGS) $(SOURCE) -o $(RELEASE_EXEC)
+hello: hash.cpp
+	g++ -O2 hash.cpp -o hash -DNDEBUG -Wall
 
 clean:
-	rm -f $(RELEASE_EXEC) $(DEBUG_EXEC)
+	rm -f hash-dbg hash
